@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+interface JobApplication {
+  id: number;
+  company: string;
+  position: string;
+  status: string;
 }
 
-export default App;
+const App = () => {
+  const [jobApplications, setJobApplications] = useState<JobApplication[]>([])
+
+  useEffect(() => {
+    fetchJobApplications()
+  }, [])
+
+  const fetchJobApplications = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/api/job-applications')
+      setJobApplications(response.data)
+    } catch (error) {
+      console.error('Failed to fetch job applications:', error)
+    }
+  }
+
+  return (
+    <div>
+      <h1>Job Applications</h1>
+      <ul>
+        {jobApplications.map((job) => (
+          <li key={job.id}>
+            {job.company} - {job.position} - {job.status}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+export default App
